@@ -1,18 +1,25 @@
 #! /usr/bin/python
 
+"""
+Details to grab the NVD vulnerabilities.
+"""
+
+from constants import *
 import feedparser
 import lxml.builder as lb
 from lxml import etree
 import sys, os
 
-XMLHEAD = '<?xml version="1.0" encoding="UTF-8"?>\n'
 DIR = os.path.abspath(os.curdir)#os.path.dirname(__file__)
 #sys.path.append(os.path.realpath('..'))
+
+
 def getRSSList():
-	f = open('rss-list', 'r')
+	f = open(NVD_RSS_LIST, 'r')
 	rssList = [line for line in f]
 	f.close()
 	return rssList
+
 
 def parse(url):
 	feed = feedparser.parse(url)
@@ -35,7 +42,7 @@ def parse(url):
 		# TODO: Resolve relative file path
 		filename = DIR + '/Data/CVE/CVE_'+str(vulId)+'.xml'
 		f = open(filename, 'w')
-		f.write(XMLHEAD)
+		f.write(XML_HEAD)
 		f.write(doc)
 		f.close()
 
