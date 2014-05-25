@@ -394,11 +394,12 @@ def article_to_xml(article):
     """
     docId = 'Paper_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
     docType = 'Paper'
+    docSource = 'google-scholar'
     docDate = article['year']
     docTitle = article['title']
 
-    pdf_filename = TMP_DIR + docId + '.pdf'
-    txt_filename = TMP_DIR + docId + '.txt'
+    pdf_filename = TMP_DIR + '/' + docId + '.pdf'
+    txt_filename = TMP_DIR + '/' + docId + '.txt'
     pdf_url = article['pdf_url']
 
     print pdf_url
@@ -415,7 +416,7 @@ def article_to_xml(article):
         lb.E.Title(docTitle),
         lb.E.Date(docDate),
         lb.E.Description(docDesc),
-        id=docId, type=docType)		
+        id=docId, type=docType, src=docSource)		
     doc = etree.tostring(document, pretty_print=True)
 
     xml_filename = PAPER_DATA_DIR + docId + '.xml'
@@ -451,6 +452,7 @@ def main():
         line = line.strip()
         if ((len(line) > 1) and (line[0] != '#')):
             print line
+            articles = []
             get_papers(line)
     """
     #get_papers('Ad Hoc Network')

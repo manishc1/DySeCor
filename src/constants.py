@@ -19,3 +19,7 @@ NVD_RECENT_RSS = 'http://static.nvd.nist.gov/feeds/xml/cve/nvdcve-2.0-recent.xml
 
 
 SECURITY_GLOSSARY = CONFIG_DIR + '/nist_glossary_of_key_information_security_terms.cfg'
+
+
+ARXIV_DOMAIN = 'http://arxiv.org'
+ARXIV_RECENT = ARXIV_DOMAIN + '/list/cs.CR/recent'
