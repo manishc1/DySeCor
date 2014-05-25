@@ -2,6 +2,9 @@
 Basic functional utilities.
 """
 
+import os
+
+
 def readLines(fileName):
     """
     Return list of lines from the file.
@@ -24,7 +27,24 @@ def writeString(fileName, string):
     Write string to the file.
     """
     try:
+        DIR = os.path.abspath(fileName + '/../')
+        if not os.path.exists(DIR):
+            os.makedirs(DIR)
         f = open(fileName, 'w')
+        f.write(string)
+        f.close()
+    except:
+        print 'File write error!'
+
+def appendString(fileName, string):
+    """
+    Write string to the file.
+    """
+    try:
+        DIR = os.path.abspath(fileName + '/../')
+        if not os.path.exists(DIR):
+            os.makedirs(DIR)
+        f = open(fileName, 'a')
         f.write(string)
         f.close()
     except:
