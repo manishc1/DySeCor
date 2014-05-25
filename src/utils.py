@@ -22,6 +22,14 @@ def readLines(fileName):
         print 'File read error!'
 
 
+def readString(fileName):
+    """
+    Read string from the file.
+    """
+    lines = readLines(fileName)
+    return ' '.join(line for line in lines)
+
+
 def writeString(fileName, string):
     """
     Write string to the file.
