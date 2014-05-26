@@ -58,3 +58,11 @@ def appendString(fileName, string):
     except:
         print 'File write error!'
 
+
+def clean(string):
+    """
+    Cleans the string to have ascii characters.
+    """
+    text = string.split()
+    string = ' '.join(text)
+    return string

@@ -61,6 +61,7 @@ class ScholarConf(object):
 
     # USER_AGENT = 'Mozilla/5.0 (X11; U; FreeBSD i386; en-US; rv:1.9.2.9) Gecko/20100913 Firefox/3.6.9'
     # Let's update at this point (3/14):
+    # USER_AGENT = 'Opera/9.25 (Windows NT 5.1; U; en)'
     USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64; rv:27.0) Gecko/20100101 Firefox/27.0'
 
     # If set, we will use this file to read/save cookies to enable
@@ -340,7 +341,7 @@ class ScholarQuerier(object):
     def __init__(self):
         self.articles = []
         self.query = None
-        self.opener = build_opener(HTTPCookieProcessor(MozillaCookieJar()))
+        self.opener = build_opener()#HTTPCookieProcessor(MozillaCookieJar()))
 
 
     def send_query(self, query):
@@ -379,9 +380,13 @@ class ScholarQuerier(object):
         Helper method, sends HTTP request and returns response payload.
         """
         try:
+            print '1'
             req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
+            print '2'
             hdl = self.opener.open(req)
+            print '3'
             html = hdl.read()
+            print '4'
             return html
         except Exception as err:
             print 'Exception: ' + str(err)
