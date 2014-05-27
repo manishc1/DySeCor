@@ -11,7 +11,7 @@ from utils import *
 import lxml.builder as lb
 
 
-WIKI_DATA_DIR = DATA_DIR + '/WikiArticles/'
+WIKI_DATA_DIR = DATA_DIR + '/WikiArticle/'
 
 
 class Glossary(object):
@@ -37,7 +37,10 @@ class Glossary(object):
             for line in lines:
                 line = line.strip()
                 if ((len(line) > 0) and (line[0] != '#')):
-                    self.phrases.append(line)
+                    if (line[0] == '/'):
+                        self.phrases.append(tuple([line.split(' ', 1)[1], True]))
+                    else:
+                        self.phrases.append(tuple([line, False]))
 
 
 class WikiGrabber(object):
@@ -57,15 +60,15 @@ class WikiGrabber(object):
         """
         Get wiki articles for all the phrases and convert to xml.
         """
-        for phrase in self.glossary.phrases:
+        for phrase, flag in self.glossary.phrases:
             results = self.wiki.find(phrase)
             for result in results:
                 article = self.wiki.get_article(result)
-                self.article_to_xml(article)
-            break
+                self.article_to_xml(article, flag)
+            #break
 
 
-    def article_to_xml(self, article):
+    def article_to_xml(self, article, flag):
         """
         Create a xml from the article.
         """
@@ -75,6 +78,9 @@ class WikiGrabber(object):
         docDate = ''
         docTitle = article.heading
         docDesc = clean(article.summary)
+
+        if (flag and ('security' not in docDesc.lower())):
+            return
 
         document = lb.E.Document(
             lb.E.Title(docTitle),

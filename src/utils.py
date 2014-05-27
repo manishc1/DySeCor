@@ -2,6 +2,7 @@
 Basic functional utilities.
 """
 
+import re
 import os
 
 
@@ -63,6 +64,8 @@ def clean(string):
     """
     Cleans the string to have ascii characters.
     """
-    text = string.split()
-    string = ' '.join(text)
+    string = string.split()
+    string = ' '.join(string)
+    string = re.sub(r'&#\d+;', r' ', string)
+    string = re.sub(r'&', r'and', string)
     return string

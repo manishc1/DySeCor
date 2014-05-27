@@ -8,7 +8,7 @@ XML_HEAD = '<?xml version="1.0" encoding="UTF-8"?>\n'
 
 
 CONFIG_DIR = os.path.abspath(__file__ + '/../../config')
-DATA_DIR = os.path.abspath(__file__ + '/../../data')
+DATA_DIR = os.path.abspath(__file__ + '/../../data/data-positive')
 LOG_DIR =  os.path.abspath(__file__ + '/../../log')
 TMP_DIR =  os.path.abspath(__file__ + '/../../tmp')
 

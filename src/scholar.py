@@ -126,7 +126,7 @@ class ScholarArticleParser(object):
         content as needed, and notifies the parser instance of
         resulting instances via the handle_article callback.
         """
-        print 'there'
+        #print 'there'
         self.soup = BeautifulSoup(html)
         for div in self.soup.findAll(ScholarArticleParser._tag_checker):
             self._parse_article(div)
@@ -363,7 +363,7 @@ class ScholarQuerier(object):
         """
         This method allows parsing of provided HTML content.
         """
-        print 'parse'
+        #print 'parse'
         parser = self.Parser(self)
         parser.parse(html)
 
@@ -380,13 +380,13 @@ class ScholarQuerier(object):
         Helper method, sends HTTP request and returns response payload.
         """
         try:
-            print '1'
+            #print '1'
             req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
-            print '2'
+            #print '2'
             hdl = self.opener.open(req)
-            print '3'
+            #print '3'
             html = hdl.read()
-            print '4'
+            #print '4'
             return html
         except Exception as err:
             print 'Exception: ' + str(err)
@@ -452,16 +452,16 @@ def get_papers(phrase):
 
 
 def main():
-    """lines = readLines(SECURITY_GLOSSARY)
+    lines = readLines(SECURITY_GLOSSARY)
     for line in lines:
         line = line.strip()
         if ((len(line) > 1) and (line[0] != '#')):
-            print line
+            #print line
             articles = []
             get_papers(line)
-    """
+    
     #get_papers('Ad Hoc Network')
-    get_papers('cybersecurity')
+    #get_papers('cybersecurity')
 
 if __name__ == "__main__":
     sys.exit(main())

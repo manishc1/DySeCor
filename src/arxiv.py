@@ -85,7 +85,7 @@ class ArxivScraper(object):
         """
         Prepares the pdf url and sends for downloading.
         """
-        for url in self.pdf_urls:
+        for url in self.pdf_urls[0:2]:
             self.url_to_xml(ARXIV_DOMAIN + url + '.pdf')
 
         
