@@ -16,7 +16,8 @@ def readLines(fileName):
         f.close()
         newlines = []
         for line in lines:
-            if (len(line.strip()) != 0):
+            line = line.strip()
+            if (len(line) != 0):
                 newlines.append(line)
         return newlines
     except:
@@ -64,6 +65,8 @@ def clean(string):
     """
     Cleans the string to have ascii characters.
     """
+    if (string is None):
+        return ''
     string = string.split()
     string = ' '.join(string)
     string = re.sub(r'&#\d+;', r' ', string)
