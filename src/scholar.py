@@ -126,7 +126,6 @@ class ScholarArticleParser(object):
         content as needed, and notifies the parser instance of
         resulting instances via the handle_article callback.
         """
-        #print 'there'
         self.soup = BeautifulSoup(html)
         for div in self.soup.findAll(ScholarArticleParser._tag_checker):
             self._parse_article(div)
@@ -226,7 +225,6 @@ class ScholarArticleParser120726(ScholarArticleParser):
     Google made 07/26/12.
     """
     def _parse_article(self, div):
-        print 'here'
         self.article = ScholarArticle()
 
         for tag in div:
@@ -234,7 +232,6 @@ class ScholarArticleParser120726(ScholarArticleParser):
                 continue
             if str(tag).lower().find('.pdf'):
                 if tag.find('div', {'class': 'gs_ttss'}):
-                    print 'got it'
                     self._parse_links(tag.find('div', {'class': 'gs_ttss'}))
 
             if tag.name == 'div' and self._tag_has_class(tag, 'gs_ri'):
@@ -380,13 +377,9 @@ class ScholarQuerier(object):
         Helper method, sends HTTP request and returns response payload.
         """
         try:
-            #print '1'
             req = Request(url=url, headers={'User-Agent': ScholarConf.USER_AGENT})
-            #print '2'
             hdl = self.opener.open(req)
-            #print '3'
             html = hdl.read()
-            #print '4'
             return html
         except Exception as err:
             print 'Exception: ' + str(err)
@@ -397,23 +390,32 @@ def article_to_xml(article):
     """
     Downloads the pdf and converts to xml.
     """
-    docId = 'Paper_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
-    docType = 'Paper'
-    docSource = 'google-scholar'
-    docDate = article['year']
-    docTitle = article['title']
+    try:
+        docId = 'Paper_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
+        docType = 'Paper'
+        docSource = 'google-scholar'
+        docDate = article['year']
+        if (docDate is None):
+            docDate = ''
+        docTitle = article['title']
+        if (docTitle is None):
+            docTitle = ''
+        docDesc = ''
 
-    pdf_filename = TMP_DIR + '/' + docId + '.pdf'
-    txt_filename = TMP_DIR + '/' + docId + '.txt'
-    pdf_url = article['pdf_url']
+        pdf_filename = TMP_DIR + '/' + docId + '.pdf'
+        txt_filename = TMP_DIR + '/' + docId + '.txt'
+        pdf_url = article['pdf_url']
 
-    print pdf_url
-
-    os.system('wget %(pdf_url)s -O %(pdf_filename)s > /dev/null 2>&1' % locals())
-    os.system('pdftotext %(pdf_filename)s' % locals())
-    os.system('rm %(pdf_filename)s' % locals())
-    docDesc = readString(txt_filename)
-    os.system('rm %(txt_filename)s' % locals())
+        if (os.system('wget %(pdf_url)s -O %(pdf_filename)s > /dev/null 2>&1' % locals()) == 0):
+            if (os.system('pdftotext %(pdf_filename)s' % locals()) == 0):
+                #os.system('rm %(pdf_filename)s' % locals())
+                docDesc = readString(txt_filename)
+                #os.system('rm %(txt_filename)s' % locals())
+        
+        if docDesc == '':
+            return
+    except:
+        return
 
     docDesc = "".join([i for i in docDesc if 31 < ord(i) < 127])
 
@@ -432,6 +434,8 @@ def get_papers(phrase):
     """
     Method to form the query and get the articles.
     """
+    global articles
+
     query = ScholarQuery()    
 
     #query.set_words(options.allw)
@@ -452,11 +456,12 @@ def get_papers(phrase):
 
 
 def main():
+    global articles
     lines = readLines(SECURITY_GLOSSARY)
-    for line in lines:
-        line = line.strip()
-        if ((len(line) > 1) and (line[0] != '#')):
-            #print line
+    for line in reversed(lines):
+        line = line.strip()        
+        if ((len(line) > 0) and (line[0] != '#') and (line[0] != '/')):
+            print line
             articles = []
             get_papers(line)
     

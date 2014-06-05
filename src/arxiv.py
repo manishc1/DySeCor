@@ -11,10 +11,8 @@ from utils import *
 import lxml.builder as lb
 import re
 import StringIO
+import sys
 import urllib
-
-
-PAPER_DATA_DIR = DATA_DIR + '/Paper/'
 
 
 class ArxivScraper(object):
@@ -26,8 +24,8 @@ class ArxivScraper(object):
         """
         Initialize the scraper.
         """
-        self.site = ARXIV_RECENT
-        #self.site = 'http://www.csee.umbc.edu/~ameyk1/'
+        #self.site = ARXIV_RECENT
+        self.site = 'http://arxiv.org/list/cs.CL/recent'
         self.pdf_urls = []
 
 
@@ -49,50 +47,60 @@ class ArxivScraper(object):
                     self.pdf_urls.append(url)
 
 
-    def url_to_xml(self, pdf_url):
+    def url_to_xml(self, pdf_url, dir_name):
         """
         Downloads the pdf and converts to xml.
         """
-        docId = 'Paper_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
-        docType = 'Paper'
-        docSource = 'arxiv'
-        docDate = ''
-        docTitle = ''
+        try:
+            docId = 'Paper_' + datetime.now().strftime('%Y-%m-%d_%H-%M-%S-%f')
+            docType = 'Paper'
+            docSource = 'arxiv'
+            docDate = ''
+            docTitle = ''
 
-        pdf_filename = TMP_DIR + '/' + docId + '.pdf'
-        txt_filename = TMP_DIR + '/' + docId + '.txt'
+            pdf_filename = TMP_DIR + '/' + docId + '.pdf'
+            txt_filename = TMP_DIR + '/' + docId + '.txt'
 
-        urllib.urlretrieve(pdf_url, pdf_filename)
-        os.system('pdftotext %(pdf_filename)s' % locals())
-        os.system('rm %(pdf_filename)s' % locals())
-        docDesc = readString(txt_filename)
-        os.system('rm %(txt_filename)s' % locals())
+            urllib.urlretrieve(pdf_url, pdf_filename)
+            os.system('pdftotext %(pdf_filename)s' % locals())
+            os.system('rm %(pdf_filename)s' % locals())
+            docDesc = clean(readString(txt_filename))
+            os.system('rm %(txt_filename)s' % locals())
 
-        docDesc = "".join([i for i in docDesc if 31 < ord(i) < 127])
+            docDesc = "".join([i for i in docDesc if 31 < ord(i) < 127])
         
-        document = lb.E.Document(
-            lb.E.Title(docTitle),
-            lb.E.Date(docDate),
-            lb.E.Description(docDesc),
-            id=docId, type=docType, src=docSource)		
-        doc = etree.tostring(document, pretty_print=True)
+            document = lb.E.Document(
+                lb.E.Title(docTitle),
+                lb.E.Date(docDate),
+                lb.E.Description(docDesc),
+                id=docId, type=docType, src=docSource)		
+            doc = etree.tostring(document, pretty_print=True)
 
-        xml_filename = PAPER_DATA_DIR + docId + '.xml'
-        writeString(xml_filename, XML_HEAD + doc)
+            xml_filename = dir_name + docId + '.xml'
+            writeString(xml_filename, XML_HEAD + doc)
+        except Exception as e:
+            print e
 
 
-    def grab(self):
+    def grab(self, dir_name):
         """
         Prepares the pdf url and sends for downloading.
         """
-        for url in self.pdf_urls[0:2]:
-            self.url_to_xml(ARXIV_DOMAIN + url + '.pdf')
+        for url in self.pdf_urls:
+            self.url_to_xml(ARXIV_DOMAIN + url + '.pdf', dir_name)
 
         
-def main():
+def main(instance_type):
+    if (instance_type == 'positive'):
+        dir_name = DATA_DIR + '/Paper-Arxiv/'
+    if (instance_type == 'negative'):
+        dir_name = NEG_DATA_DIR + '/Paper-Arxiv/'
     scraper = ArxivScraper()
     scraper.scrape()
-    scraper.grab()
+    scraper.grab(dir_name)
 
 if __name__ == "__main__":
-    main()
+    nargs = len(sys.argv)
+    args = sys.argv
+    if nargs == 2:
+        main(args[1])

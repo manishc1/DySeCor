@@ -3,6 +3,7 @@ Basic functional utilities.
 """
 
 import re
+import string as String
 import os
 
 
@@ -28,8 +29,12 @@ def readString(fileName):
     """
     Read string from the file.
     """
-    lines = readLines(fileName)
-    return ' '.join(line for line in lines)
+    try:
+        lines = readLines(fileName)
+        return ' '.join(line for line in lines)
+    except:
+        if (lines is None):
+            return ''
 
 
 def writeString(fileName, string):
@@ -43,8 +48,11 @@ def writeString(fileName, string):
         f = open(fileName, 'w')
         f.write(string)
         f.close()
-    except:
-        print 'File write error!'
+    except Exception as e:
+        print string
+        print 'File write error! [' + str(e) + ']'
+        exit()
+
 
 def appendString(fileName, string):
     """
@@ -61,6 +69,15 @@ def appendString(fileName, string):
         print 'File write error!'
 
 
+def filter_ascii(c):
+    """
+    Return ascii.
+    """
+    if (ord(c) < 32 or ord(c) > 126):
+        return ''
+    return c
+
+
 def clean(string):
     """
     Cleans the string to have ascii characters.
@@ -71,4 +88,8 @@ def clean(string):
     string = ' '.join(string)
     string = re.sub(r'&#\d+;', r' ', string)
     string = re.sub(r'&', r'and', string)
+    string = string.encode('ascii',errors='ignore')
+    new_string = ''
+    for c in string:
+        new_string = new_string + filter_ascii(c)
     return string
